@@ -16,6 +16,8 @@
 
 ## 📢 News
 
+- **[2025-04-15]** 📄 **Enhanced Document Processing!** NodeRAG now supports a wider range of document formats (PDF, CSV, Excel, DOCX, PPTX) with semantic chunking powered by docling.
+
 - **[2025-03-18]** 🚀 **NodeRAG v0.1.0 Released!** The first stable version is now available on [PyPI](https://pypi.org/project/NodeRAG/). Install it with `pip install NodeRAG`.
   
 - **[2025-03-18]** 🌐 **Official Website Launched!** Visit [NodeRAG_web](https://terry-xu-666.github.io/NodeRAG_web/) for comprehensive documentation, tutorials, and examples.
@@ -70,18 +72,29 @@ Install NodeRAG using `uv` for optimized performance:
 uv pip install NodeRAG
 ```
 
+### Supported Document Formats
+
+NodeRAG now supports a wide range of document formats through its docling integration:
+
+- PDF documents
+- CSV and Excel spreadsheets
+- Microsoft Word (DOCX) files
+- PowerPoint (PPTX) presentations
+- Markdown and text files
+
+Documents are processed using semantic chunking for improved retrieval quality.
+
 ### Next
 > For indexing and answering processes, please refer to our website: [Indexing](https://terry-xu-666.github.io/NodeRAG_web/docs/indexing/) and [Answering](https://terry-xu-666.github.io/NodeRAG_web/docs/answer/)
 
 
 ## ✨ Features
 
-
+#### 📄 Advanced Document Processing
+NodeRAG leverages docling for semantic document processing and chunking, supporting a wide range of file formats and ensuring high-quality retrieval from various document types.
 
 #### 🔗 Enhancing Graph Structure for RAG  
 NodeRAG introduces a heterogeneous graph structure that strengthens the foundation of graph-based Retrieval-Augmented Generation (RAG).
-
-
 
 #### 🔍 Fine-Grained and Explainable Retrieval  
 NodeRAG leverages HeteroGraphs to enable functionally distinct nodes, ensuring precise and context-aware retrieval while improving interpretability.
@@ -89,15 +102,11 @@ NodeRAG leverages HeteroGraphs to enable functionally distinct nodes, ensuring p
 #### 🧱 A Unified Information Retrieval  
 Instead of treating extracted insights and raw data as separate layers, NodeRAG integrates them as interconnected nodes, creating a seamless and adaptable retrieval system.
 
-
 #### ⚡ Optimized Performance and Speed  
 NodeRAG achieves faster graph construction and retrieval speeds through unified algorithms and optimized implementations.
 
-
 #### 🔄 Incremental Graph Updates  
 NodeRAG supports incremental updates within heterogeneous graphs using graph connectivity mechanisms.
-
-
 
 #### 📊 Visualization and User Interface  
 NodeRAG offers a user-friendly visualization system. Coupled with a fully developed Web UI, users can explore, analyze, and manage the graph structure with ease.

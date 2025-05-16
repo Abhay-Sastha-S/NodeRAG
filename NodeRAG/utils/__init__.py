@@ -9,6 +9,7 @@ from .PPR import sparse_PPR
 from .graph_operator import IGraph,MultigraphConcat
 from .HNSW import HNSW
 from .yaml_operation import YamlHandler
+from .document_loader import DocumentLoader
 
 __all__ = [
     'Tracker',
@@ -22,5 +23,6 @@ __all__ = [
     'IGraph',
     'MultigraphConcat',
     'HNSW',
-    'YamlHandler'
+    'YamlHandler',
+    'DocumentLoader'
 ]

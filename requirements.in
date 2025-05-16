@@ -1,8 +1,10 @@
 aiohttp
 backoff
+docling
 faiss-cpu
 flask
 hnswlib-noderag
+httpx
 igraph
 leidenalg
 networkx

@@ -1,5 +1,6 @@
 from typing import List
 from .token_utils import get_token_counter
+from .document_loader import DocumentLoader
 
 class SemanticTextSplitter:
     def __init__(self, chunk_size: int = 1048, model_name: str = "gpt-4o-mini"):
@@ -12,10 +13,49 @@ class SemanticTextSplitter:
         """
         self.chunk_size = chunk_size
         self.token_counter = get_token_counter(model_name)
+        
+        # Initialize docling document loader
+        try:
+            self.document_loader = DocumentLoader()
+            self.use_docling = True
+        except ImportError:
+            self.use_docling = False
 
     def split(self, text: str) -> List[str]:
         """
         Split text into chunks based on both token count and semantic boundaries.
+        If docling is available, use its semantic chunking capabilities.
+        """
+        # Try to use docling for more semantic chunking
+        if self.use_docling:
+            try:
+                # Use docling's semantic chunker with token-based validation
+                raw_chunks = self.document_loader.chunk_document(
+                    text, 
+                    chunk_size=self.chunk_size * 4,  # Character estimate
+                    overlap=200
+                )
+                
+                # Validate and possibly further split chunks based on token count
+                validated_chunks = []
+                for chunk in raw_chunks:
+                    if self.token_counter(chunk) <= self.chunk_size:
+                        validated_chunks.append(chunk)
+                    else:
+                        # If a chunk is still too large, recursively split it
+                        validated_chunks.extend(self._fallback_split(chunk))
+                
+                return validated_chunks
+            except Exception:
+                # Fall back to the original method if docling fails
+                return self._fallback_split(text)
+        else:
+            # Use the original method if docling is not available
+            return self._fallback_split(text)
+        
+    def _fallback_split(self, text: str) -> List[str]:
+        """
+        Original splitting method as fallback
         """
         chunks = []
         start = 0

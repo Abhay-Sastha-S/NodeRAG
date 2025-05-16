@@ -458,7 +458,7 @@ def sidebar():
             uploaded_files = st.file_uploader(
                 "Upload your documents",
                 accept_multiple_files=True,
-                type=['txt', 'doc', 'docx','md']
+                type=['txt', 'pdf', 'csv', 'xlsx', 'doc', 'docx', 'md', 'pptx']
             )
             
             input_folder = os.path.join(st.session_state.config['main_folder'], 'input')
@@ -476,7 +476,17 @@ def sidebar():
                 if input_files:
                     st.markdown("### 📄 Files in Input Folder")
                     for file in input_files:
-                        st.markdown(f"<div style='margin-left:20px;'><i>📝 {file}</i></div>", unsafe_allow_html=True)
+                        file_extension = os.path.splitext(file)[1].lower()
+                        icon = "📝"  # Default icon
+                        if file_extension == '.pdf':
+                            icon = "📄"
+                        elif file_extension in ['.csv', '.xlsx', '.xls']:
+                            icon = "📊"
+                        elif file_extension in ['.docx', '.doc']:
+                            icon = "📃"
+                        elif file_extension == '.pptx':
+                            icon = "📑"
+                        st.markdown(f"<div style='margin-left:20px;'><i>{icon} {file}</i></div>", unsafe_allow_html=True)
                 else:
                     st.write("Input folder is empty")
                     

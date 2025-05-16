@@ -5,6 +5,7 @@ from ...config import NodeConfig
 from ...storage.storage import storage
 from ..component.document import document
 from ...logging import info_timer
+from ...utils.document_loader import DocumentLoader
 
 
 class document_pipline():
@@ -18,6 +19,7 @@ class document_pipline():
         self._documents = None
         self._hash_ids = None
         self._human_readable_id = None
+        self.document_loader = DocumentLoader()
         
         
     def integrity_check(self):
@@ -37,9 +39,12 @@ class document_pipline():
         if self._documents is None:
             self._documents = []
             for path in self.documents_path:
-                with open(path, 'r', encoding='utf-8') as f:
-                    raw_context = f.read()
-                self._documents.append(document(raw_context,path,self.config.semantic_text_splitter))
+                try:
+                    # Using the document loader to handle different file types
+                    raw_context = self.document_loader.load_document(path)
+                    self._documents.append(document(raw_context, path, self.config.semantic_text_splitter))
+                except Exception as e:
+                    self.config.console.print(f'[red]Error loading document {path}: {str(e)}[/red]')
         return self._documents
     
     @property
