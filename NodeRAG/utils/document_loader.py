@@ -19,10 +19,12 @@ class DocumentLoader:
     
     def __init__(self):
         try:
-            import docling
-            self.docling = docling
+            # Import docling's DocumentConverter instead of direct Document import
+            from docling.document_converter import DocumentConverter
+            self.converter = DocumentConverter()
+            self.use_docling = True
         except ImportError:
-            raise ImportError("Please install docling: pip install docling")
+            self.use_docling = False
             
     def load_document(self, file_path: str) -> str:
         """
@@ -36,12 +38,24 @@ class DocumentLoader:
         """
         file_extension = os.path.splitext(file_path)[1].lower()
         
-        # Let docling handle different file types
-        try:
-            doc = self.docling.Document(file_path)
-            return doc.text
-        except Exception as e:
-            # Fallback to traditional methods if docling fails
+        # Try to use docling for document loading
+        if self.use_docling:
+            try:
+                # Use docling's DocumentConverter to process the document
+                result = self.converter.convert(file_path)
+                return result.document.text
+            except Exception as e:
+                # Fallback to traditional methods if docling fails
+                if file_extension == '.csv':
+                    return self.load_csv(file_path)
+                elif file_extension in ['.xlsx', '.xls']:
+                    return self.load_excel(file_path)
+                elif file_extension in ['.txt', '.md']:
+                    return self.load_text(file_path)
+                else:
+                    raise ValueError(f"Failed to process file {file_path}: {str(e)}")
+        else:
+            # Fallback to traditional methods if docling is not available
             if file_extension == '.csv':
                 return self.load_csv(file_path)
             elif file_extension in ['.xlsx', '.xls']:
@@ -49,7 +63,7 @@ class DocumentLoader:
             elif file_extension in ['.txt', '.md']:
                 return self.load_text(file_path)
             else:
-                raise ValueError(f"Failed to process file {file_path}: {str(e)}")
+                raise ValueError(f"Cannot process file type {file_extension} without docling")
     
     def load_csv(self, file_path: str, return_format: str = 'text') -> Union[str, pd.DataFrame]:
         """
@@ -118,17 +132,28 @@ class DocumentLoader:
         Returns:
             List of text chunks
         """
-        try:
-            doc = self.docling.Document.from_text(text)
-            chunks = doc.chunks(
-                chunker=self.docling.chunking.SemanticChunker(
-                    target_chunk_size=chunk_size,
-                    overlap=overlap
-                )
-            )
-            return [chunk.text for chunk in chunks]
-        except Exception as e:
-            # Fallback to a simple chunking method if docling chunking fails
+        if self.use_docling:
+            try:
+                # Use docling's conversion and sectioning for chunking
+                from docling.document_converter import DocumentConverter
+                # Create a document from the text
+                result = self.converter.convert_from_text(text)
+                # Get sections as chunks
+                sections = result.document.sections if hasattr(result.document, 'sections') else []
+                if sections:
+                    return [section.text for section in sections]
+                else:
+                    # If no sections, use the document's paragraphs if available
+                    paragraphs = result.document.paragraphs if hasattr(result.document, 'paragraphs') else []
+                    if paragraphs:
+                        return [p.text for p in paragraphs]
+                    # If no paragraphs either, fall back to simple chunking
+                    return self._simple_chunk_text(text, chunk_size, overlap)
+            except Exception as e:
+                # Fallback to a simple chunking method if docling chunking fails
+                return self._simple_chunk_text(text, chunk_size, overlap)
+        else:
+            # Fallback if docling is not available
             return self._simple_chunk_text(text, chunk_size, overlap)
     
     def _simple_chunk_text(self, text: str, chunk_size: int = 1000, overlap: int = 200) -> List[str]:

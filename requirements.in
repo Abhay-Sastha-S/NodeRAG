@@ -1,6 +1,6 @@
 aiohttp
 backoff
-docling
+docling>=2.32.0
 faiss-cpu
 flask
 hnswlib-noderag

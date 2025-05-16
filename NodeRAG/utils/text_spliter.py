@@ -17,9 +17,10 @@ class SemanticTextSplitter:
         # Initialize docling document loader
         try:
             self.document_loader = DocumentLoader()
-            self.use_docling = True
-        except ImportError:
+            self.use_docling = self.document_loader.use_docling
+        except Exception:
             self.use_docling = False
+            self.document_loader = None
 
     def split(self, text: str) -> List[str]:
         """
